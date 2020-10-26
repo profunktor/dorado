@@ -66,22 +66,20 @@ This is `One.json`.
 And this is `Two.json`.
 
 ```json
-{
-  "Two" : {
-    "id" : "a1651f08-72f2-4264-85be-6ee6b1b77e6c",
-    "bar" : 123,
-    "createdAt" : "2020-10-25T09:27:26.270734Z"
-  }
-}
+{"Two":{"id" :"a1651f08-72f2-4264-85be-6ee6b1b77e6c","bar":123,"createdAt":"2020-10-25T09:27:26.270734Z"}}
 ```
 
-Then all we have to do to create a "roundtrip JSON conversion test", which will read the existing files and try to decode it using the existing decoders, is the following.
+Yes! As you can see, the format does not matter, as long as the JSON is valid and can be decoded to our existing datatype.
+
+All we have to do next to create a *roundtrip JSON conversion test* is the following.
 
 ```scala
 import munit.golden.circe.CirceGoldenSuite
 
 class EventGoldenSuite extends CirceGoldenSuite[Event]("/event")
 ```
+
+It will read all the JSON files under `test/resources/event/`, it will try to parse every one of them with the decoder for `Event`, and it will finally compare the decoded values against the original inputs (disregarding formatting) to make valuable tests.
 
 This is the output, in case of success.
 
