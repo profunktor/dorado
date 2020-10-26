@@ -1,0 +1,8 @@
+project/project/
+project/target/
+target/
+cache/
+out/
+.metals
+.bloop
+result
