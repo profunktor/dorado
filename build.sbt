@@ -4,12 +4,41 @@ ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / version      := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "dev.profunktor"
 
+lazy val commonSettings = List(
+  scalafmtOnCompile := true,
+  ThisBuild / crossScalaVersions := Seq("2.13.2"),
+  ThisBuild / homepage := Some(url("https://github.com/profunktor/munit-golden")),
+  ThisBuild / organization := "dev.profunktor",
+  ThisBuild / organizationName := "ProfunKtor",
+  ThisBuild / startYear := Some(2020),
+  ThisBuild / licenses := List(
+    "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
+  ),
+  ThisBuild / headerLicenseStyle := HeaderLicenseStyle.SpdxSyntax,
+  ThisBuild / developers := List(
+    Developer(
+      "gvolpe",
+      "Gabriel Volpe",
+      "volpegabriel@gmail.com",
+      url("https://gvolpe.github.io")
+    )
+  )
+)
+
+lazy val noPublish = {
+  skip in publish := true
+}
+
 lazy val root = (project in file("."))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(noPublish)
   .aggregate(`munit-golden-core`, `munit-golden-circe`, examples)
 
 lazy val `munit-golden-core` = (project in file("modules/core"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
   .settings(
-    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
     libraryDependencies ++= List(
       CompilerPlugins.betterMonadicFor,
       CompilerPlugins.contextApplied,
@@ -19,8 +48,9 @@ lazy val `munit-golden-core` = (project in file("modules/core"))
   )
 
 lazy val `munit-golden-circe` = (project in file("modules/circe"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
   .settings(
-    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
     libraryDependencies ++= List(
       CompilerPlugins.betterMonadicFor,
       CompilerPlugins.contextApplied,
@@ -33,8 +63,9 @@ lazy val `munit-golden-circe` = (project in file("modules/circe"))
   .dependsOn(`munit-golden-core`)
 
 lazy val examples = (project in file("modules/examples"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
   .settings(
-    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= List(
