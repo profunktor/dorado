@@ -112,3 +112,13 @@ def jsonEncoder: A => String
 ```
 
 Adding new modules for other JSON libraries would be really easy, PRs welcome!
+
+## Similar libraries
+
+AFAIK there's only [circe-golden](https://github.com/circe/circe-golden), but please correct me if I'm mistaken by either opening an issue or even better, by creating a PR.
+
+Circe Golden, besides only supporting Circe as the JSON library, it creates a bunch of serialized files with data generated with Scalacheck's generators. These files are then read in subsequent runs of the tests and compared against the newly serialized data, by using the same Scalacheck seed.
+
+The idea is great. However, whenever you make any changes to your model, you need to delete all the generated JSON files so that they are created again with the new version of the protocol. This is far from ideal, since we immediately lose meaningful diffs and it gets harder to keep track of these changes in any PR.
+
+Conversely, `munit-golden` supports *any* JSON library as well as meaningful diffs when breaking the protocol. This is the essence of the project.
