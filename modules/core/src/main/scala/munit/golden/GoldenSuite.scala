@@ -1,4 +1,4 @@
-package dev.profunktor.golden
+package munit.golden
 
 import munit.FunSuite
 import java.nio.file.Files
@@ -11,8 +11,19 @@ import scala.reflect.ClassTag
 
 abstract class GoldenSuite[A: ClassTag] extends FunSuite {
 
+  /**
+    * The JSON decoder function.
+    */
   def jsonDecoder: String => Either[String, A]
+
+  /**
+    * The JSON encoder function.
+    */
   def jsonEncoder: A => String
+
+  /**
+    * The path of the directory under the test/resources folder.
+   **/
   def path: String
 
   test(s"${implicitly[ClassTag[A]]} roundtrip conversion") {
