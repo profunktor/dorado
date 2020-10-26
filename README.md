@@ -1,5 +1,11 @@
 # munit-golden
 
+[![CI Status](https://github.com/profunktor/munit-golden/workflows/Scala/badge.svg)](https://github.com/profunktor/munit-golden/actions)
+[![MergifyStatus](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/profunktor/munit-golden&style=flat)](https://mergify.io)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.profunktor/munit-golden-core_2.13.svg)](https://search.maven.org/search?q=dev.profunktor.munit-golden)
+[![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-brightgreen.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
+<a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
+
 Generic golden testing library based on [MUnit](https://scalameta.org/munit/).
 
 ## Goal
@@ -117,6 +123,6 @@ AFAIK there's only [circe-golden](https://github.com/circe/circe-golden), but pl
 
 Circe Golden, besides only supporting Circe as the JSON library, it creates a bunch of serialized files with data generated with Scalacheck's generators. These files are then read in subsequent runs of the tests and compared against the newly serialized data, by using the same Scalacheck seed.
 
-The idea is great. However, whenever you make any changes to your model, you need to delete all the generated JSON files so that they are created again with the new version of the protocol. This is far from ideal, since we immediately lose meaningful diffs and it gets harder to keep track of these changes in any PR.
+The idea is great. However, whenever you make any changes to your model, you need to delete all the generated JSON files so that they are created again with the new version of the protocol. This is far from ideal, since we immediately lose meaningful diffs and it gets harder to keep track of the actual changes in any PR.
 
 Conversely, `munit-golden` supports *any* JSON library as well as meaningful diffs when breaking the protocol. This is the essence of the project.
