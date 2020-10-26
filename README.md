@@ -6,7 +6,7 @@ Generic golden testing library based on [MUnit](https://scalameta.org/munit/).
 
 The main idea behind golden tests is to make it as explicitly as possible when we are breaking the JSON protocol, either by changing or deleting a field, or by adding new event or removing an existing one.
 
-So the goal is to keep it simple and have meaningful diffs when submitting a PR that breaks the protocol one way or another.
+Ideally, we would achieve this goal by keeping it simple and have meaningful diffs when submitting a PR that breaks the protocol one way or another.
 
 ## Dependencies
 
@@ -110,3 +110,5 @@ For now, there is only a Circe module supported out of the box but `GoldenSuite`
 def jsonDecoder: String => Either[String, A]
 def jsonEncoder: A => String
 ```
+
+Adding new modules for other JSON libraries would be really easy, PRs welcome!
