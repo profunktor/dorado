@@ -65,6 +65,7 @@ lazy val `munit-golden-circe` = (project in file("modules/circe"))
 lazy val examples = (project in file("modules/examples"))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
+  .settings(noPublish)
   .settings(
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("munit.Framework"),
