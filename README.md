@@ -108,11 +108,16 @@ dev.profunktor.golden.EventGoldenSuite:
 
 The `CirceGoldenSuite` is a convenient modules you can use by adding `munit-golden-circe` to your dependencies, though, we could use `GoldenSuite` directly.
 
-`GoldenSuite` abstracts over any JSON library. All we need is to `extends GoldenSuite` and implement the following two methods.
+`GoldenSuite` abstracts over any JSON library. All we need is to `extends GoldenSuite` and implement the following methods.
 
 ```scala
 def jsonDecoder: String => Either[String, A]
 def jsonEncoder: A => String
+
+/**
+  * The path of the directory under the test/resources folder.
+ **/
+def path: String
 ```
 
 Adding new modules for other JSON libraries would be really easy, PRs welcome!
