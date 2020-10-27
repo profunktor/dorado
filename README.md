@@ -165,6 +165,6 @@ Circe Golden, besides only supporting Circe as the JSON library, it creates a bu
 
 The idea is great. However, whenever you make any changes to your model, you need to delete all the generated JSON files so that they are created again with the new version of the protocol. This is far from ideal, since we immediately lose meaningful diffs and it gets harder to keep track of the actual changes in any PR.
 
-Also, Circe Golden only works with `sbt` - and not with other build tools - due to [hard-coded resource paths](https://github.com/circe/circe-golden/blob/master/golden/src/main/scala/io/circe/testing/golden/Resources.scala#L23) specifics to `sbt`.
+Also, at the time of writing (Oct 27th of 2020), Circe Golden only works with `sbt` - and not with other build tools - due to [hard-coded resource paths](https://github.com/circe/circe-golden/blob/master/golden/src/main/scala/io/circe/testing/golden/Resources.scala#L23) specifics to `sbt`.
 
 Conversely, `munit-golden` supports *any* JSON library as well as meaningful diffs when breaking the protocol. It also supports other build tools such as [Mill](https://github.com/lihaoyi/mill). This is the essence of the project.
