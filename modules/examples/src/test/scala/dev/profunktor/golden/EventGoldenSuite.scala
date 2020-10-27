@@ -17,5 +17,10 @@
 package dev.profunktor.golden
 
 import munit.golden.circe.CirceGoldenSuite
+import scala.collection.immutable.SortedSet
 
-class EventGoldenSuite extends CirceGoldenSuite[Event]("/event")
+class EventGoldenSuite extends CirceGoldenSuite[Event]("/event") {
+
+  override val expectedTypes = SortedSet("One", "Two")
+
+}

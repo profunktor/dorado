@@ -157,6 +157,38 @@ class EventGoldenSuite extends CirceGoldenSuite[Event]("/event") {
 
 It involves a bit of boilerplate but in the end, we will benefit from the compiler warning us about the non-exhaustive pattern-matching whenever we add a new event.
 
+### Expected types
+
+If we indicate the expected types as.
+
+```scala
+override val expectedTypes = SortedSet("One", "Two")
+```
+
+Then the test suite will verify that there was at least one JSON files corresponding to each expected type. If not, it will fail with an error like the one below.
+
+```scala
+dev.profunktor.golden.EventGoldenSuite:
+==> X dev.profunktor.golden.EventGoldenSuite.dev.profunktor.golden.Event roundtrip conversion  0.179s munit.FailException: /home/gvolpe/workspace/golden/modules/core/src/main/scala/munit/golden/GoldenSuite.scala:72
+71:      }
+72:    assertEquals(expectedTypes, obtainedTypes)
+73:  }
+values are not the same
+=> Obtained
+Set(
+  "One",
+  "Two"
+) | => dev.profunktor.golden.EventGoldenSuite 0s
+=> Diff (- obtained, + expected)
+ Set(
+-  "One",
+-  "Two"
++  "One"
+ )
+    at munit.FunSuite.assertEquals(FunSuite.scala:11)
+    at munit.golden.GoldenSuite.$anonfun$new$1(GoldenSuite.scala:72)
+```
+
 ## Similar libraries
 
 AFAIK there's only [circe-golden](https://github.com/circe/circe-golden), but please correct me if I'm mistaken by either opening an issue or even better, by creating a PR.

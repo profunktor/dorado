@@ -42,7 +42,8 @@ lazy val `munit-golden-core` = (project in file("modules/core"))
       CompilerPlugins.betterMonadicFor,
       CompilerPlugins.contextApplied,
       CompilerPlugins.kindProjector,
-      Libraries.munitCore
+      Libraries.munitCore,
+      Libraries.shapeless
     )
   )
 

@@ -21,6 +21,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
 
+import scala.collection.immutable.SortedSet
 import scala.io.Source
 import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
@@ -39,10 +40,18 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
 
   /**
     * The path of the directory under the test/resources folder.
-   **/
+    */
   def path: String
 
-  test(s"${implicitly[ClassTag[A]]} roundtrip conversion") {
+  /**
+    * The expected types. e.g. the names of the branches of an ADT.
+    */
+  def expectedTypes: SortedSet[String]
+
+  private var obtainedTypes: SortedSet[String] = SortedSet.empty
+  private val parentType: String               = implicitly[ClassTag[A]].toString()
+
+  test(s"$parentType roundtrip conversion") {
     Files
       .walk(Paths.get(getClass().getResource(path).getPath()))
       .map(_.toAbsolutePath())
@@ -55,9 +64,16 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
           Source.fromFile(path.toUri()).getLines().mkString.filterNot(_.isWhitespace)
 
         jsonDecoder(json) match {
-          case Left(e)  => fail(e)
-          case Right(e) => assertEquals(jsonEncoder(e), json)
+          case Left(e) => fail(e)
+          case Right(e) =>
+            obtainedTypes = obtainedTypes + e
+                    .getClass()
+                    .getCanonicalName()
+                    .drop(parentType.length + 1)
+            assertEquals(jsonEncoder(e), json)
         }
       }
+    assertEquals(expectedTypes, obtainedTypes)
   }
+
 }
