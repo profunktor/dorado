@@ -8,6 +8,8 @@
 
 Generic golden testing library based on [MUnit](https://scalameta.org/munit/).
 
+⚠️ **it is in a very early stage but you're welcome to give it a try** ⚠️
+
 ## Goal
 
 The main idea behind golden tests is to make it as explicitly as possible when we are breaking the JSON protocol, either by changing or deleting a field, or by adding new event or removing an existing one.
@@ -16,7 +18,7 @@ Ideally, we would achieve this goal by keeping it simple and have meaningful dif
 
 ## Dependencies
 
-*NOTE: Not yet published to Maven Central*
+Find out the latest version above in the Maven badge as well under [releases](https://github.com/profunktor/munit-golden/releases).
 
 ```scala
 libraryDependencies += "dev.profunktor" %% "munit-golden-core" % Version
@@ -85,7 +87,7 @@ import munit.golden.circe.CirceGoldenSuite
 class EventGoldenSuite extends CirceGoldenSuite[Event]("/event")
 ```
 
-It will read all the JSON files under `test/resources/event/`, it will try to parse every one of them with the decoder for `Event`, and it will finally compare the decoded values against the original inputs (disregarding formatting) to make valuable tests.
+It will read all the JSON files under `test/resources/event/`, try to parse every one of them with the decoder for `Event`, and finally compare the decoded values against the original inputs (disregarding formatting) to make valuable tests.
 
 This is the output, in case of success.
 
@@ -95,7 +97,7 @@ sbt:examples> testdev.profunktor.golden.EventGoldenSuite:
 [info] Passed: Total 1, Failed 0, Errors 0, Passed 1
 ```
 
-In case of failure, you might see something like this.
+In case of failure, you might see something like this (not the best error message but that might be improved in future iterations).
 
 ```scala
 sbt:examples> test
@@ -121,6 +123,39 @@ def path: String
 ```
 
 Adding new modules for other JSON libraries would be really easy, PRs welcome!
+
+### Adding new cases
+
+By looking at the type signature of `jsonEncoder`, we can tell there are many ways to implement the same function - i.e. it is weakly-typed. This is due to the simplicity of this first version. Hopefully it can be improved in the future.
+
+Anyway, the important part is that for Circe, it is implemented as follows (having an `Encoder[A]` instance in scope).
+
+```scala
+import io.circe.syntax._
+
+def jsonEncoder: A => String = _.asJson.noSpaces
+```
+
+With such implementation, our test suite will still compile and pass whenever we add a new `Event`, and this is unfortunate. One way to get around this issue is to follow the good practice to override this method and implement it using pattern matching instead, to leverage the Scala compiler. So users are encouraged to do the following, continuing with our `Event` example.
+
+```scala
+import munit.golden.circe.CirceGoldenSuite
+
+class EventGoldenSuite extends CirceGoldenSuite[Event]("/event") {
+
+  override def jsonEncoder: Event => String =
+    e => {
+      val result = e.asJson.noSpaces
+      e match {
+        case _: Event.One => result
+        case _: Event.Two => result
+      }
+    }
+
+}
+```
+
+It involves a bit of boilerplate but in the end, we will benefit from the compiler warning us about the non-exhaustive pattern-matching whenever we add a new event.
 
 ## Similar libraries
 
