@@ -159,4 +159,4 @@ Conversely, `munit-golden` supports *any* JSON library as well as meaningful dif
 
 ## Credits
 
-Huge thanks to [Fabio Labella](https://github.com/SystemFw) for the [type-level machinery](https://github.com/profunktor/munit-golden/tree/main/modules/core/src/main/scala/munit/golden/internal/Check.scala) to check for exhaustive checks at runtime.
+Huge thanks to [Fabio Labella](https://github.com/SystemFw) for the [type-level machinery](https://github.com/profunktor/munit-golden/tree/main/modules/core/src/main/scala/munit/golden/internal/Check.scala) to check for exhaustiveness at runtime.
