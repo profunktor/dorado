@@ -17,12 +17,21 @@
 package dev.profunktor
 
 import java.time.Instant
+import java.util.UUID
 
 import cats.effect.Sync
 import io.circe._
 import io.estatico.newtype.macros.newtype
 
 package object golden {
+
+  @newtype case class EventId(value: UUID)
+  object EventId {
+    def make[F[_]: Sync]: F[EventId] = F.delay(EventId(UUID.randomUUID()))
+
+    implicit val jsonEncoder: Encoder[EventId] = deriving
+    implicit val jsonDecoder: Decoder[EventId] = deriving
+  }
 
   @newtype case class Timestamp(value: Instant)
   object Timestamp {

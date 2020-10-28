@@ -17,16 +17,16 @@
 package munit.golden
 
 import munit.FunSuite
+import munit.golden.internal.Check
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
 
-import scala.collection.immutable.SortedSet
 import scala.io.Source
 import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 
-abstract class GoldenSuite[A: ClassTag] extends FunSuite {
+abstract class GoldenSuite[A: Check.Checks: ClassTag] extends FunSuite {
 
   /**
     * The JSON decoder function.
@@ -43,13 +43,12 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
     */
   def path: String
 
-  /**
-    * The expected types. e.g. the names of the branches of an ADT.
-    */
-  def expectedTypes: SortedSet[String]
+  private val check = Check[A]
 
-  private var obtainedTypes: SortedSet[String] = SortedSet.empty
-  private val parentType: String               = implicitly[ClassTag[A]].toString()
+  private val branches: collection.mutable.Set[String] = collection.mutable.Set()
+  private val checks: collection.mutable.Set[check.Id] = collection.mutable.Set()
+
+  private val parentType: String = implicitly[ClassTag[A]].toString()
 
   test(s"$parentType roundtrip conversion") {
     Files
@@ -66,14 +65,15 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
         jsonDecoder(json) match {
           case Left(e) => fail(e)
           case Right(e) =>
-            obtainedTypes = obtainedTypes + e
-                    .getClass()
-                    .getCanonicalName()
-                    .drop(parentType.length + 1)
             assertEquals(jsonEncoder(e), json)
+            checks.add(check.register(e))
+            branches += e.getClass().getCanonicalName()
         }
       }
-    assertEquals(expectedTypes, obtainedTypes)
+    assert(
+      check.check(checks.toSet),
+      s"> Non-exhaustive matching. Processed branches: ${branches.map(b => s"\n  - $b").mkString}"
+    )
   }
 
 }
