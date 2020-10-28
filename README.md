@@ -32,13 +32,13 @@ This is the most minimal library that supports golden testing. As such, it expec
 Let's say we have the following ADT, namely `Event`, as demonstrated under `modules/examples`.
 
 ```scala
+@newtype case class EventId(value: UUID)
+@newtype case class Timestamp(value: Instant)
+
 sealed trait Event
 object Event {
-  @newtype case class Id(value: UUID)
-  @newtype case class Timestamp(value: Instant)
-
-  final case class One(id: Id, foo: String, createdAt: Timestamp) extends Event
-  final case class Two(id: Id, bar: Int, createdAt: Timestamp) extends Event
+  final case class One(id: EventId, foo: String, createdAt: Timestamp) extends Event
+  final case class Two(id: EventId, bar: Int, createdAt: Timestamp) extends Event
 
   implicit val jsonEncoder: Encoder[Event] = deriveEncoder
   implicit val jsonDecoder: Decoder[Event] = deriveDecoder
@@ -97,7 +97,9 @@ sbt:examples> testdev.profunktor.golden.EventGoldenSuite:
 [info] Passed: Total 1, Failed 0, Errors 0, Passed 1
 ```
 
-In case of failure, you might see something like this (not the best error message but that might be improved in future iterations).
+#### Decoding failure
+
+In case of a decoding failure, you might see something like this (not the best error message but that might be improved in future iterations).
 
 ```scala
 sbt:examples> test
@@ -107,6 +109,25 @@ dev.profunktor.golden.EventGoldenSuite:
 42:          case Left(e)  => fail(e)
 43:          case Right(e) => assertEquals(jsonEncoder(e), json)
 ```
+
+#### Exhaustiveness check failure
+
+In case of non-exhaustive failure check (e.g. missing JSON file for `Event.Two`), you'll get an error message as the one below.
+
+```scala
+sbt:examples> test
+dev.profunktor.golden.EventGoldenSuite:
+==> X dev.profunktor.golden.EventGoldenSuite.dev.profunktor.golden.Event roundtrip conversion  0.196s munit.FailException: /home/gvolpe/workspace/golden/modules/core/src/main/scala/munit/golden/GoldenSuite.scala:73
+72:      }
+73:    assert(
+74:      check.check(checks.toSet),
+> Non-exhaustive matching. Processed branches:
+  - dev.profunktor.golden.Event.One
+    at munit.FunSuite.assert(FunSuite.scala:11)
+    at munit.golden.GoldenSuite.$anonfun$new$1(GoldenSuite.scala:73)
+```
+
+#### Golden Suite
 
 The `CirceGoldenSuite` is a convenient modules you can use by adding `munit-golden-circe` to your dependencies, though, we could use `GoldenSuite` directly.
 
@@ -124,39 +145,6 @@ def path: String
 
 Adding new modules for other JSON libraries would be really easy, PRs welcome!
 
-### Adding new cases
-
-By looking at the type signature of `jsonEncoder`, we can tell there are many ways to implement the same function - i.e. it is weakly-typed. This is due to the simplicity of this first version. Hopefully it can be improved in the future.
-
-Anyway, the important part is that for Circe, it is implemented as follows (having an `Encoder[A]` instance in scope).
-
-```scala
-import io.circe.syntax._
-
-def jsonEncoder: A => String = _.asJson.noSpaces
-```
-
-With such implementation, our test suite will still compile and pass whenever we add a new `Event`, and this is unfortunate. One way to get around this issue is to follow the good practice to override this method and implement it using pattern matching instead, to leverage the Scala compiler. So users are encouraged to do the following, continuing with our `Event` example.
-
-```scala
-import munit.golden.circe.CirceGoldenSuite
-
-class EventGoldenSuite extends CirceGoldenSuite[Event]("/event") {
-
-  override def jsonEncoder: Event => String =
-    e => {
-      val result = e.asJson.noSpaces
-      e match {
-        case _: Event.One => result
-        case _: Event.Two => result
-      }
-    }
-
-}
-```
-
-It involves a bit of boilerplate but in the end, we will benefit from the compiler warning us about the non-exhaustive pattern-matching whenever we add a new event.
-
 ## Similar libraries
 
 AFAIK there's only [circe-golden](https://github.com/circe/circe-golden), but please correct me if I'm mistaken by either opening an issue or even better, by creating a PR.
@@ -168,3 +156,7 @@ The idea is great. However, whenever you make any changes to your model, you nee
 Also, at the time of writing (Oct 27th of 2020), Circe Golden only works with `sbt` - and not with other build tools - due to [hard-coded resource paths](https://github.com/circe/circe-golden/blob/master/golden/src/main/scala/io/circe/testing/golden/Resources.scala#L23) specifics to `sbt`.
 
 Conversely, `munit-golden` supports *any* JSON library as well as meaningful diffs when breaking the protocol. It also supports other build tools such as [Mill](https://github.com/lihaoyi/mill). This is the essence of the project.
+
+## Credits
+
+Huge thanks to [Fabio Labella](https://github.com/SystemFw) for the [type-level machinery](https://github.com/profunktor/munit-golden/tree/main/modules/core/src/main/scala/munit/golden/internal/Check.scala) to check for exhaustive checks at runtime.

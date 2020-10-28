@@ -17,6 +17,7 @@
 package munit.golden
 
 import munit.FunSuite
+import munit.golden.internal.Check
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
@@ -25,7 +26,7 @@ import scala.io.Source
 import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 
-abstract class GoldenSuite[A: ClassTag] extends FunSuite {
+abstract class GoldenSuite[A: Check.Checks: ClassTag] extends FunSuite {
 
   /**
     * The JSON decoder function.
@@ -39,10 +40,17 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
 
   /**
     * The path of the directory under the test/resources folder.
-   **/
+    */
   def path: String
 
-  test(s"${implicitly[ClassTag[A]]} roundtrip conversion") {
+  private val check = Check[A]
+
+  private val branches: collection.mutable.Set[String] = collection.mutable.Set()
+  private val checks: collection.mutable.Set[check.Id] = collection.mutable.Set()
+
+  private val parentType: String = implicitly[ClassTag[A]].toString()
+
+  test(s"$parentType roundtrip conversion") {
     Files
       .walk(Paths.get(getClass().getResource(path).getPath()))
       .map(_.toAbsolutePath())
@@ -55,9 +63,17 @@ abstract class GoldenSuite[A: ClassTag] extends FunSuite {
           Source.fromFile(path.toUri()).getLines().mkString.filterNot(_.isWhitespace)
 
         jsonDecoder(json) match {
-          case Left(e)  => fail(e)
-          case Right(e) => assertEquals(jsonEncoder(e), json)
+          case Left(e) => fail(e)
+          case Right(e) =>
+            assertEquals(jsonEncoder(e), json)
+            checks.add(check.register(e))
+            branches += e.getClass().getCanonicalName()
         }
       }
+    assert(
+      check.check(checks.toSet),
+      s"> Non-exhaustive matching. Processed branches: ${branches.map(b => s"\n  - $b").mkString}"
+    )
   }
+
 }

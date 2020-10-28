@@ -23,7 +23,7 @@ import io.circe.syntax._
 object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
-    (Event.Id.make[IO], Timestamp.make[IO]).parTupled
+    (EventId.make[IO], Timestamp.make[IO]).parTupled
       .flatMap {
         case (id, ts) =>
           val e1: Event = Event.One(id, "test1", ts)

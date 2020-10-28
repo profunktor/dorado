@@ -17,13 +17,14 @@
 package munit.golden
 package circe
 
+import munit.golden.internal.Check
 import io.circe.{ Decoder, Encoder }
 import io.circe.parser.decode
 import io.circe.syntax._
 
 import scala.reflect.ClassTag
 
-abstract class CirceGoldenSuite[A: ClassTag: Decoder: Encoder](
+abstract class CirceGoldenSuite[A: Check.Checks: ClassTag: Decoder: Encoder](
     val path: String
 ) extends GoldenSuite[A] {
 

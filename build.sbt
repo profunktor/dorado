@@ -4,6 +4,7 @@ ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / organization := "dev.profunktor"
 
 lazy val commonSettings = List(
+  //scalacOptions -= "-Xfatal-warnings",
   scalafmtOnCompile := true,
   ThisBuild / crossScalaVersions := Seq("2.13.2"),
   ThisBuild / homepage := Some(url("https://github.com/profunktor/munit-golden")),
@@ -42,7 +43,8 @@ lazy val `munit-golden-core` = (project in file("modules/core"))
       CompilerPlugins.betterMonadicFor,
       CompilerPlugins.contextApplied,
       CompilerPlugins.kindProjector,
-      Libraries.munitCore
+      Libraries.munitCore,
+      Libraries.shapeless
     )
   )
 
