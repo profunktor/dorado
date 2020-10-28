@@ -1,10 +1,14 @@
 name: Scala
 
 on:
-  pull_request: {}
+  pull_request:
+    paths-ignore:
+      - "README.md"
   push:
     branches:
       - main
+    paths-ignore:
+      - "README.md"
 
 jobs:
   build:
