@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package dev.profunktor.golden
+package munit.golden
 
-import munit.golden.circe.CirceGoldenSuite
+import io.circe._
+import io.circe.generic.semiauto._
 
-class EventGoldenSuite extends CirceGoldenSuite[Event]("/event")
+sealed trait Event
+object Event {
+  final case class One(id: EventId, foo: String, createdAt: Timestamp) extends Event
+  final case class Two(id: EventId, bar: Int, createdAt: Timestamp) extends Event
+
+  implicit val jsonEncoder: Encoder[Event] = deriveEncoder
+  implicit val jsonDecoder: Decoder[Event] = deriveDecoder
+}

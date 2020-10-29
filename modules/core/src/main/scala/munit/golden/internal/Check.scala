@@ -27,7 +27,7 @@ trait Check[T] {
 }
 
 object Check {
-  def apply[T](implicit ev: Checks[T]): Check[T] = new Check[T] {
+  private[golden] def apply[T](implicit ev: Checks[T]): Check[T] = new Check[T] {
     type Id = Int
     def register[A <: T](t: T): Id = ev.checks.indexWhere(_.apply(t))
     def check(registered: Set[Id]): Boolean =

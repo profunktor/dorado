@@ -8,6 +8,7 @@ object Dependencies {
     val fs2        = "2.4.4"
     val munit      = "0.7.13"
     val newtype    = "0.4.4"
+    val refined    = "0.9.17"
     val shapeless  = "2.3.3"
 
     val betterMonadicFor = "0.3.1"
@@ -21,6 +22,7 @@ object Dependencies {
     val catsEffect = "org.typelevel" %% "cats-effect" % V.catsEffect
     val fs2        = "co.fs2"        %% "fs2-core"    % V.fs2
     val newtype    = "io.estatico"   %% "newtype"     % V.newtype
+    val refined    = "eu.timepit"    %% "refined"     % V.refined
     val shapeless  = "com.chuusai"   %% "shapeless"   % V.shapeless
 
     val circeCore    = "io.circe" %% "circe-core"    % V.circe

@@ -78,6 +78,7 @@ lazy val examples = (project in file("modules/examples"))
       Libraries.catsEffect,
       Libraries.circeGeneric,
       Libraries.newtype,
+      Libraries.refined,
       Libraries.munitCore % Test
     )
   )
