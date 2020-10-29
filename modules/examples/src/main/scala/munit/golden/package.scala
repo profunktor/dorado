@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.profunktor
+package munit
 
 import java.time.Instant
 import java.util.UUID

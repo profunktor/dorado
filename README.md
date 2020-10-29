@@ -145,6 +145,16 @@ def path: String
 
 Adding new modules for other JSON libraries would be really easy, PRs welcome!
 
+## Known limitations
+
+#### ADT support
+
+A golden test suite is mainly useful when you have an Algebraic Data Type (ADT) so that's the only thing that this library supports. If you have simple `case class`, it wouldn't work.
+
+#### Newtypes & Refined
+
+There are a few [registered issues](https://github.com/profunktor/munit-golden/issues) with [newtype](https://github.com/estatico/scala-newtype) and [refined](https://github.com/fthomas/refined). In general, everything works except for a few weird edge cases that I hope can be solved at some point.
+
 ## Similar libraries
 
 AFAIK there's only [circe-golden](https://github.com/circe/circe-golden), but please correct me if I'm mistaken by either opening an issue or even better, by creating a PR.
