@@ -113,4 +113,22 @@ object CompileCheck {
 
   Check[Yay6]
 
+  /* abstract type */
+  type Lala
+
+  sealed trait Yay7
+  object Yay7 {
+    case class Foo(x: Lala) extends Yay7
+  }
+
+  internal.Check[Yay7]
+
+  /* abstract type within a companion object */
+  sealed trait Yay8
+  object Yay8 {
+    type LOL
+    case class Foo(x: Yay8.LOL) extends Yay8
+  }
+
+  internal.Check[Yay8]
 }

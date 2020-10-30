@@ -52,4 +52,14 @@ object bugs {
   }
 
   //internal.Check[Yay3]
+
+  sealed trait Yay4
+  object Yay4 {
+    type LOL
+    case class Foo(x: LOL) extends Yay4 //this does not compile
+    //case class Foo(x: Yay4.LOL) extends Yay4 //this compiles
+  }
+
+  //shapeless.Typeable[Yay4.Foo] // class type required but munit.golden.bugs.Yay4.LOL found
+  //internal.Check[Yay4]
 }
