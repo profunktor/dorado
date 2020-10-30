@@ -22,14 +22,14 @@ import scala.annotation.nowarn
 /* All credits goes to Fabio Labella for this implementation: https://gist.github.com/SystemFw/1038a0ba297760efca946bbe5c1650bd */
 trait Check[T] {
   type Id
-  def register[A <: T](t: T): Id
+  def register(t: T): Id
   def check(registered: Set[Id]): Boolean
 }
 
 object Check {
   private[golden] def apply[T](implicit ev: Checks[T]): Check[T] = new Check[T] {
     type Id = Int
-    def register[A <: T](t: T): Id = ev.checks.indexWhere(_.apply(t))
+    def register(t: T): Id = ev.checks.indexWhere(_.apply(t))
     def check(registered: Set[Id]): Boolean =
       ev.checks.indices.forall(registered.contains)
   }
