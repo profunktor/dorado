@@ -1,12 +1,12 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "dev.profunktor"
 
 lazy val commonSettings = List(
   //scalacOptions -= "-Xfatal-warnings",
   scalafmtOnCompile := true,
-  ThisBuild / crossScalaVersions := Seq("2.13.2"),
+  ThisBuild / crossScalaVersions := Seq("2.13.4"),
   ThisBuild / homepage := Some(url("https://github.com/profunktor/munit-golden")),
   ThisBuild / organization := "dev.profunktor",
   ThisBuild / organizationName := "ProfunKtor",
