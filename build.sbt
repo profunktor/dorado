@@ -1,12 +1,12 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "dev.profunktor"
 
 lazy val commonSettings = List(
   //scalacOptions -= "-Xfatal-warnings",
   scalafmtOnCompile := true,
-  ThisBuild / crossScalaVersions := Seq("2.13.2"),
+  ThisBuild / crossScalaVersions := Seq("2.13.4"),
   ThisBuild / homepage := Some(url("https://github.com/profunktor/munit-golden")),
   ThisBuild / organization := "dev.profunktor",
   ThisBuild / organizationName := "ProfunKtor",
@@ -19,8 +19,8 @@ lazy val commonSettings = List(
     Developer(
       "gvolpe",
       "Gabriel Volpe",
-      "volpegabriel@gmail.com",
-      url("https://gvolpe.github.io")
+      "hello@gvolpe.com",
+      url("https://gvolpe.com")
     )
   )
 )
@@ -40,8 +40,6 @@ lazy val `munit-golden-core` = (project in file("modules/core"))
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= List(
-      CompilerPlugins.betterMonadicFor,
-      CompilerPlugins.contextApplied,
       CompilerPlugins.kindProjector,
       Libraries.munitCore,
       Libraries.shapeless
@@ -53,8 +51,6 @@ lazy val `munit-golden-circe` = (project in file("modules/circe"))
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= List(
-      CompilerPlugins.betterMonadicFor,
-      CompilerPlugins.contextApplied,
       CompilerPlugins.kindProjector,
       Libraries.circeCore,
       Libraries.circeParser,
@@ -71,8 +67,6 @@ lazy val examples = (project in file("modules/examples"))
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= List(
-      CompilerPlugins.betterMonadicFor,
-      CompilerPlugins.contextApplied,
       CompilerPlugins.kindProjector,
       Libraries.cats,
       Libraries.catsEffect,
