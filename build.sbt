@@ -4,25 +4,22 @@ ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "dev.profunktor"
 
 lazy val commonSettings = List(
-  //scalacOptions -= "-Xfatal-warnings",
   scalafmtOnCompile := true,
+  startYear := Some(2020),
+  licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+  headerLicense := Some(HeaderLicense.ALv2("2020-2021", "ProfunKtor")),
   ThisBuild / crossScalaVersions := Seq("2.13.4"),
-  ThisBuild / homepage := Some(url("https://github.com/profunktor/munit-golden")),
+  ThisBuild / homepage := Some(url("https://github.com/profunktor/dorado")),
   ThisBuild / organization := "dev.profunktor",
   ThisBuild / organizationName := "ProfunKtor",
-  ThisBuild / startYear := Some(2020),
-  ThisBuild / licenses := List(
-    "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
-  ),
-  ThisBuild / headerLicenseStyle := HeaderLicenseStyle.SpdxSyntax,
   ThisBuild / developers := List(
-    Developer(
-      "gvolpe",
-      "Gabriel Volpe",
-      "hello@gvolpe.com",
-      url("https://gvolpe.com")
-    )
-  )
+        Developer(
+          "gvolpe",
+          "Gabriel Volpe",
+          "hello@gvolpe.com",
+          url("https://gvolpe.com")
+        )
+      )
 )
 
 lazy val noPublish = {
@@ -33,31 +30,65 @@ lazy val root = (project in file("."))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
   .settings(noPublish)
-  .aggregate(`munit-golden-core`, `munit-golden-circe`, examples)
+  .aggregate(`dorado-core`, `dorado-munit-core`, `dorado-munit-circe`, examples)
 
-lazy val `munit-golden-core` = (project in file("modules/core"))
+lazy val `dorado-core` = (project in file("modules/core"))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= List(
-      CompilerPlugins.kindProjector,
-      Libraries.munitCore,
-      Libraries.shapeless
-    )
+          CompilerPlugins.kindProjector,
+          Libraries.shapeless
+        )
   )
 
-lazy val `munit-golden-circe` = (project in file("modules/circe"))
+lazy val `dorado-munit-core` = (project in file("modules/munit-core"))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= List(
-      CompilerPlugins.kindProjector,
-      Libraries.circeCore,
-      Libraries.circeParser,
-      Libraries.munitCore
-    )
+          CompilerPlugins.kindProjector,
+          Libraries.munitCore
+        )
   )
-  .dependsOn(`munit-golden-core`)
+  .dependsOn(`dorado-core`)
+
+lazy val `dorado-munit-circe` = (project in file("modules/munit-circe"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= List(
+          CompilerPlugins.kindProjector,
+          Libraries.circeCore,
+          Libraries.circeParser,
+          Libraries.munitCore
+        )
+  )
+  .dependsOn(`dorado-munit-core`)
+
+lazy val `dorado-weaver-core` = (project in file("modules/weaver-core"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= List(
+          CompilerPlugins.kindProjector,
+          Libraries.weaverCats
+        )
+  )
+  .dependsOn(`dorado-core`)
+
+lazy val `dorado-weaver-circe` = (project in file("modules/weaver-circe"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= List(
+          CompilerPlugins.kindProjector,
+          Libraries.circeCore,
+          Libraries.circeParser,
+          Libraries.weaverCats
+        )
+  )
+  .dependsOn(`dorado-weaver-core`)
 
 lazy val examples = (project in file("modules/examples"))
   .enablePlugins(AutomateHeaderPlugin)
@@ -66,14 +97,16 @@ lazy val examples = (project in file("modules/examples"))
   .settings(
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("munit.Framework"),
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     libraryDependencies ++= List(
-      CompilerPlugins.kindProjector,
-      Libraries.cats,
-      Libraries.catsEffect,
-      Libraries.circeGeneric,
-      Libraries.newtype,
-      Libraries.refined,
-      Libraries.munitCore % Test
-    )
+          CompilerPlugins.kindProjector,
+          Libraries.cats,
+          Libraries.catsEffect,
+          Libraries.circeGeneric,
+          Libraries.newtype,
+          Libraries.refined,
+          Libraries.munitCore  % Test,
+          Libraries.weaverCats % Test
+        )
   )
-  .dependsOn(`munit-golden-circe`)
+  .dependsOn(`dorado-munit-circe`, `dorado-weaver-circe`)
