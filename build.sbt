@@ -30,7 +30,14 @@ lazy val root = (project in file("."))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
   .settings(noPublish)
-  .aggregate(`dorado-core`, `dorado-munit-core`, `dorado-munit-circe`, examples)
+  .aggregate(
+    `dorado-core`,
+    `dorado-munit-core`,
+    `dorado-munit-circe`,
+    `dorado-weaver-core`,
+    `dorado-weaver-circe`,
+    examples
+  )
 
 lazy val `dorado-core` = (project in file("modules/core"))
   .enablePlugins(AutomateHeaderPlugin)
