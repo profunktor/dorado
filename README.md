@@ -1,4 +1,4 @@
-# munit-golden
+# dorado
 
 [![CI Status](https://github.com/profunktor/munit-golden/workflows/Scala/badge.svg)](https://github.com/profunktor/munit-golden/actions)
 [![MergifyStatus](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/profunktor/munit-golden&style=flat)](https://mergify.io)
@@ -6,7 +6,11 @@
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-brightgreen.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 <a href="https://typelevel.org/cats/"><img src="https://raw.githubusercontent.com/typelevel/cats/master/docs/src/main/resources/microsite/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
 
-Generic golden testing library based on [MUnit](https://scalameta.org/munit/).
+Generic golden testing library with support for [MUnit](https://scalameta.org/munit/) and [Weaver](https://disneystreaming.github.io/weaver-test/).
+
+ℹ️ The name "dorado" is the Spanish for "golden".
+
+---
 
 ⚠️ **it is in a very early stage but you're welcome to give it a try** ⚠️
 
@@ -18,11 +22,20 @@ Ideally, we would achieve this goal by keeping it simple and have meaningful dif
 
 ## Dependencies
 
-Find out the latest version above in the Maven badge as well under [releases](https://github.com/profunktor/munit-golden/releases).
+Find out the latest version above in the Maven badge as well under [releases](https://github.com/profunktor/dorado/releases).
+
+For `munit`:
 
 ```scala
-libraryDependencies += "dev.profunktor" %% "munit-golden-core" % Version
-libraryDependencies += "dev.profunktor" %% "munit-golden-circe" % Version
+libraryDependencies += "dev.profunktor" %% "dorado-munit-core" % Version
+libraryDependencies += "dev.profunktor" %% "dorado-munit-circe" % Version
+```
+
+For `weaver`:
+
+```scala
+libraryDependencies += "dev.profunktor" %% "dorado-weaver-core" % Version
+libraryDependencies += "dev.profunktor" %% "dorado-weaver-circe" % Version
 ```
 
 ## About
@@ -82,9 +95,17 @@ Yes! As you can see, the format does not matter, as long as the JSON is valid an
 All we have to do next to create a *roundtrip JSON conversion test* is the following.
 
 ```scala
-import munit.golden.circe.CirceGoldenSuite
+import dorado.munit.circe.CirceDoradoSuite
 
-class EventGoldenSuite extends CirceGoldenSuite[Event]("/event")
+class EventGoldenSuite extends CirceDoradoSuite[Event]("/event")
+```
+
+Or using Weaver:
+
+```scala
+import dorado.weaver.circe.CirceDoradoSuite
+
+object EventGoldenSuite extends CirceDoradoSuite[Event]("/event")
 ```
 
 It will read all the JSON files under `test/resources/event/`, try to parse every one of them with the decoder for `Event`, and finally compare the decoded values against the original inputs (disregarding formatting) to make valuable tests.
@@ -127,23 +148,32 @@ dev.profunktor.golden.EventGoldenSuite:
     at munit.golden.GoldenSuite.$anonfun$new$1(GoldenSuite.scala:73)
 ```
 
-#### Golden Suite
+#### Dorado Suite
 
-The `CirceGoldenSuite` is a convenient modules you can use by adding `munit-golden-circe` to your dependencies, though, we could use `GoldenSuite` directly.
+The `CirceDoradoSuite` is a convenient modules you can use by adding the corresponding Circe module to your dependencies, though, we could either use `MunitDoradoSuite` or `WeaverDoradoSuite` directly.
 
-`GoldenSuite` abstracts over any JSON library. All we need is to `extends GoldenSuite` and implement the following methods.
+`Dorado` abstracts over any JSON library. This is how it is defined:
 
 ```scala
-def jsonDecoder: String => Either[String, A]
-def jsonEncoder: A => String
+trait Dorado[A] {
+  /**
+    * The JSON decoder function.
+    */
+  def jsonDecoder: String => Either[String, A]
 
-/**
-  * The path of the directory under the test/resources folder.
- **/
-def path: String
+  /**
+    * The JSON encoder function.
+    */
+  def jsonEncoder: A => String
+
+  /**
+    * The path of the directory under the test/resources folder.
+    */
+  def path: String
+}
 ```
 
-Adding new modules for other JSON libraries would be really easy, PRs welcome!
+Adding new modules for other JSON libraries would be really easy, have a look at `dorado-core` and their concrete implementations, PRs welcome!
 
 ## Known limitations
 
@@ -153,7 +183,7 @@ A golden test suite is mainly useful when you have an Algebraic Data Type (ADT) 
 
 #### Newtypes & Refined
 
-There are a few [registered issues](https://github.com/profunktor/munit-golden/issues) with [newtype](https://github.com/estatico/scala-newtype) and [refined](https://github.com/fthomas/refined). In general, everything works except for a few weird edge cases that I hope can be solved at some point.
+There are a few [registered issues](https://github.com/profunktor/dorado/issues) with Newtype and Refined. In general, everything works except for a few weird edge cases that I hope can be solved at some point.
 
 ## Similar libraries
 
@@ -165,7 +195,7 @@ The idea is great. However, whenever you make any changes to your model, you nee
 
 Also, at the time of writing (Oct 27th of 2020), Circe Golden only works with `sbt` - and not with other build tools - due to [hard-coded resource paths](https://github.com/circe/circe-golden/blob/master/golden/src/main/scala/io/circe/testing/golden/Resources.scala#L23) specifics to `sbt`.
 
-Conversely, `munit-golden` supports *any* JSON library as well as meaningful diffs when breaking the protocol. It also supports other build tools such as [Mill](https://github.com/lihaoyi/mill). This is the essence of the project.
+Conversely, `dorado` supports *any* JSON library as well as meaningful diffs when breaking the protocol. It also supports other build tools such as [Mill](https://github.com/lihaoyi/mill). This is the essence of the project.
 
 ## Credits
 
